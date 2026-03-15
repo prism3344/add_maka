@@ -27,102 +27,84 @@
             color: white;
         }
 
-        .content-wrapper {
-            margin-bottom: 40px;
+        #cont input, #cont textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
         }
-
-
-        .pupil {
-            width: 40px;
-            height: 40px;
-            background-color: #333;
-            border-radius: 50%;
-            transition: 0.1s linear; 
-        }
-
-   
     </style>
 </head>
 
 <body>
-        <div id="cont">
+    <div id="cont">
+        <h1>Zgłoś artykuł</h1>
         <input id="headers" placeholder="tytuł maks. 30 znaków" maxlength="30">
         <br>
-        <textarea id="tekst" style="width: 500px; height: 500px;" placeholder="maks. do zaakceptowania 500 znaków chyba, że nie będzie dało się upchnąć artykułu w 500 znakach to może być maks 1000" maxlength="1000"></textarea>
+        <textarea id="tekst" style="width: 500px; height: 300px;" placeholder="Wpisz treść artykułu..." maxlength="1000"></textarea>
         <br>
         <p id="licznik-znakow">aktualna liczba znaków: 0</p>
         <br>
         <button id="btn">wyślij zgłoszenie</button>
-        </div> 
-        
+    </div> 
 
     <script>
-        let con = document.getElementById('cont')
-        function send() {
+        const btn = document.getElementById('btn');
+        const con = document.getElementById('cont');
+        const input = document.getElementById('tekst');
+        const licznik = document.getElementById('licznik-znakow');
+
+        async function send() {
             let ti = document.getElementById('headers').value;
-            let te = document.getElementById('tekst').value;
-            
+            let te = input.value;
 
-            if (te.length > 500) {
-                alert('Niebezpieczna granica(ponad 500 znaków)! twój artykuł może zostać odrzucony chyba, że będzie wystarczająco dobry');
-            } 
-
-            if (ti.length > 30) {
-                alert('tytuł jest zbyt długi')
-            }
-            if (ti.length == 0) {
-                alert('Tytuł nie może być pusty');
+            // Logika walidacji (zostaje bez zmian)
+            if (te.length === 0 || ti.length === 0) {
+                alert('Tytuł i treść nie mogą być puste!');
+                return;
             }
 
-
-            if (te.length == 0) {
-                alert('Tekst nie może być pusty');
+            if (te.length > 500 && te.length <= 1000) {
+                alert('Ostrzeżenie: Artykuł ma ponad 500 znaków. Może zostać odrzucony.');
             }
-
 
             if (te.length > 1000) {
-                alert('twój artykuł nie mógł zostać wysłany(ponad 1000 znaków)')
+                alert('Błąd: Treść przekracza 1000 znaków!');
+                return;
             }
 
+            // Wysyłka do Formspree zamiast starego API
+            // PODSTAW SWOJE ID TUTAJ:
+            const FORMSPREE_ID = "mpqyjpab"; 
 
+            try {
+                const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        subject: "Nowe zgłoszenie: " + ti,
+                        message: te
+                    })
+                });
 
-            if (te.length < 1001 && ti.length < 31) {fetch('https://apimakaw.onrender.com/art/addart', {
-            method: 'POST',
-            body: JSON.stringify({
-                title: document.getElementById('headers').value,
-                body: te = document.getElementById('tekst').value,
-            }),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-            },
-            })
-            con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1>'
+                if (response.ok) {
+                    con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1><p>Dziękujemy! Otrzymasz powiadomienie na maila.</p>';
+                } else {
+                    alert('Wystąpił błąd przy wysyłce.');
+                }
+            } catch (error) {
+                alert('Problem z połączeniem: ' + error.message);
             }
         }
 
         btn.addEventListener("click", send);
 
-        const input = document.getElementById('tekst');
-        const licznik = document.getElementById('licznik-znakow');
         input.addEventListener('input', () => {
-        let dlugosc = input.value.length;
-            licznik.textContent = `aktualna liczba znaków: ${dlugosc}`;
+            licznik.textContent = `aktualna liczba znaków: ${input.value.length}`;
         });
-
-
     </script>
-
-
-
-    
-
-
-    
 </body>
-
 </html>
-
-
-
-
-
