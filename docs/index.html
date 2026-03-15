@@ -86,12 +86,12 @@
                     },
                     body: JSON.stringify({
                         subject: "Nowe zgłoszenie: " + ti,
-                        message: "tekst" + te
+                        message: "tekst: " + te
                     })
                 });
 
                 if (response.ok) {
-                    con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1><p>Dziękujemy! Otrzymasz powiadomienie na maila.</p>';
+                    con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1><p>poczekaj na akceptacje</p>';
                 } else {
                     alert('Wystąpił błąd przy wysyłce.');
                 }
