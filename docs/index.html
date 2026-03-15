@@ -1,110 +1,219 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
     <style>
+
         h1 {
+
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
             font-size: 40px;
+
             margin-bottom: 10px;
+
         }
+
         p, a {
+
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
         }
+
         a { font-size: 20px; text-decoration: none; color: #007bff; }
 
+
         body {
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: flex-start; 
+
             align-items: center;
+
             min-height: 100vh;
+
             margin: 0;
+
             padding-top: 50px; 
+
             background-color: #222;
+
             background-image: url('https://github.com/prism3344/d11/blob/main/docs/tlo.png?raw=true');
+
             background-size: cover;
+
             text-align: center;
+
             color: white;
+
         }
 
-        #cont input, #cont textarea {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
+
+        .content-wrapper {
+
+            margin-bottom: 40px;
+
         }
+
+
+
+        .pupil {
+
+            width: 40px;
+
+            height: 40px;
+
+            background-color: #333;
+
+            border-radius: 50%;
+
+            transition: 0.1s linear; 
+
+        }
+
+
+   
+
     </style>
+
 </head>
 
+
 <body>
-    <div id="cont">
-        <h1>Zgłoś artykuł</h1>
+
+        <div id="cont">
+
         <input id="headers" placeholder="tytuł maks. 30 znaków" maxlength="30">
+
         <br>
-        <textarea id="tekst" style="width: 500px; height: 300px;" placeholder="Wpisz treść artykułu..." maxlength="1000"></textarea>
+
+        <textarea id="tekst" style="width: 500px; height: 500px;" placeholder="maks. do zaakceptowania 500 znaków chyba, że nie będzie dało się upchnąć artykułu w 500 znakach to może być maks 1000" maxlength="1000"></textarea>
+
         <br>
+
         <p id="licznik-znakow">aktualna liczba znaków: 0</p>
+
         <br>
+
         <button id="btn">wyślij zgłoszenie</button>
-    </div> 
+
+        </div> 
+
+        
+
 
     <script>
-        const btn = document.getElementById('btn');
-        const con = document.getElementById('cont');
-        const input = document.getElementById('tekst');
-        const licznik = document.getElementById('licznik-znakow');
 
-        async function send() {
+        let con = document.getElementById('cont')
+
+        function send() {
+
             let ti = document.getElementById('headers').value;
-            let te = input.value;
 
-            // Logika walidacji (zostaje bez zmian)
-            if (te.length === 0 || ti.length === 0) {
-                alert('Tytuł i treść nie mogą być puste!');
-                return;
+            let te = document.getElementById('tekst').value;
+
+            
+
+
+            if (te.length > 500) {
+
+                alert('Niebezpieczna granica(ponad 500 znaków)! twój artykuł może zostać odrzucony chyba, że będzie wystarczająco dobry');
+
+            } 
+
+
+            if (ti.length > 30) {
+
+                alert('tytuł jest zbyt długi')
+
             }
 
-            if (te.length > 500 && te.length <= 1000) {
-                alert('Ostrzeżenie: Artykuł ma ponad 500 znaków. Może zostać odrzucony.');
+            if (ti.length == 0) {
+
+                alert('Tytuł nie może być pusty');
+
             }
+
+
+
+            if (te.length == 0) {
+
+                alert('Tekst nie może być pusty');
+
+            }
+
+
 
             if (te.length > 1000) {
-                alert('Błąd: Treść przekracza 1000 znaków!');
-                return;
+
+                alert('twój artykuł nie mógł zostać wysłany(ponad 1000 znaków)')
+
             }
 
-            // Wysyłka do Formspree zamiast starego API
-            // PODSTAW SWOJE ID TUTAJ:
-            const FORMSPREE_ID = "mpqyjpab"; 
 
-            try {
-                const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        subject: "Nowe zgłoszenie: " + ti,
-                        message: "tekst: " + te
-                    })
-                });
 
-                if (response.ok) {
-                    con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1><p>poczekaj na akceptacje</p>';
-                } else {
-                    alert('Wystąpił błąd przy wysyłce.');
-                }
-            } catch (error) {
-                alert('Problem z połączeniem: ' + error.message);
+
+            if (te.length < 1001 && ti.length < 31) {fetch('https://apimakaw.onrender.com/art/addart', {
+
+            method: 'POST',
+
+            body: JSON.stringify({
+
+                title: document.getElementById('headers').value,
+
+                body: te = document.getElementById('tekst').value,
+
+            }),
+
+            headers: {
+
+                'Content-type': 'application/json; charset=UTF-8',
+
+            },
+
+            })
+
+            con.innerHTML = '<h1>ZGŁOSZENIE DODANE</h1>'
+
             }
+
         }
+
 
         btn.addEventListener("click", send);
 
+
+        const input = document.getElementById('tekst');
+
+        const licznik = document.getElementById('licznik-znakow');
+
         input.addEventListener('input', () => {
-            licznik.textContent = `aktualna liczba znaków: ${input.value.length}`;
+
+        let dlugosc = input.value.length;
+
+            licznik.textContent = `aktualna liczba znaków: ${dlugosc}`;
+
         });
+
+
+
     </script>
+
+
+
+
+    
+
+
+
+    
+
 </body>
-</html>
+
+
+</html> 
